@@ -55,13 +55,13 @@ class Config {
 #if defined(ESP8266)
     return 1.59;  // 220k to Batt+
 #elif defined(ESP32C3)
-    return 1.70;  // 220k + 220k
+    return 2.55;  // 220k + 220k
 #elif defined(ESP32S2)
-    return 1.65; // 220k + 220k
+    return 2.45; // 220k + 220k
 #elif defined(ESP32S3)
-    return 2.02;  // 220k + 220k
+    return 3.00;  // 220k + 220k
 #elif defined(ESP32)
-    return 1.3; 
+    return 2.45; 
 #else
   #error "Unknown platform"
 #endif
@@ -86,7 +86,13 @@ BatteryVoltage::BatteryVoltage() {
 #else
   pinMode(myConfig.getVoltagePin(), INPUT);
   analogReadResolution(SOC_ADC_MAX_BITWIDTH);
-  analogSetAttenuation(ADC_11db); // Max possible input is 2.7V
+  // Max input values per board (2.5V is the a good setting)
+  // ESP32: 2450mV
+  // ESP32-S2: 2500mV
+  // ESP32-S3: 3100mV
+  // ESP32-C3: 2500mV
+  // ESP32-C6: 3300mV  
+  analogSetAttenuation(ADC_11db); 
 #endif
 }
 
@@ -97,7 +103,7 @@ void BatteryVoltage::read() {
 #if defined(ESP8266)
   _batteryLevel = ((3.3 / 1023) * v) * factor;
 #else  // defined (ESP32)
-  _batteryLevel = ((3.3 / ((1 << SOC_ADC_MAX_BITWIDTH)-1)) * v) * factor;
+  _batteryLevel = ((2.2 / ((1 << SOC_ADC_MAX_BITWIDTH)-1)) * v) * factor;
 #endif
 
   Log.verbose(
