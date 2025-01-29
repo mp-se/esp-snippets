@@ -59,7 +59,9 @@ class Config {
 #elif defined(ESP32S2)
     return 2.45; // 220k + 220k
 #elif defined(ESP32S3)
-    return 3.00;  // 220k + 220k
+    return 3.05;  // 220k + 220k
+#elif defined(ESP32LITE)
+    return 2.45; 
 #elif defined(ESP32)
     return 2.45; 
 #else
@@ -102,8 +104,16 @@ void BatteryVoltage::read() {
 
 #if defined(ESP8266)
   _batteryLevel = ((3.3 / 1023) * v) * factor;
-#else  // defined (ESP32)
-  _batteryLevel = ((2.2 / ((1 << SOC_ADC_MAX_BITWIDTH)-1)) * v) * factor;
+#elif defined(ESP32S2)
+  _batteryLevel = ((2.5 / ((1 << SOC_ADC_MAX_BITWIDTH)-1)) * v) * factor;
+#elif defined(ESP32S3)
+  _batteryLevel = ((3.1 / ((1 << SOC_ADC_MAX_BITWIDTH)-1)) * v) * factor;
+#elif defined(ESP32C3)
+  _batteryLevel = ((2.5 / ((1 << SOC_ADC_MAX_BITWIDTH)-1)) * v) * factor;
+#elif defined(ESP32LITE)
+  _batteryLevel = ((2.4 / ((1 << SOC_ADC_MAX_BITWIDTH)-1)) * v) * factor;
+#elif defined(ESP32)
+  _batteryLevel = ((2.4 / ((1 << SOC_ADC_MAX_BITWIDTH)-1)) * v) * factor;
 #endif
 
   Log.verbose(
